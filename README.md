@@ -57,6 +57,7 @@ Cache-Control包括：
 
 max-age（单位为s）指定设置缓存最大的有效时间，定义的是时间长短。当浏览器向服务器发送请求后，在max-age这段时间里浏览器就不会再向服务器发送请求了。
 我们来找个资源看下。比如shang.qq.com上的css资源，max-age=2592000，也就是说缓存有效期为2592000秒（也就是30天）。于是在30天内都会使用这个版本的资源，即使服务器上的资源发生了变化，浏览器也不会得到通知。max-age会覆盖掉Expires。
+[示例](http://pub.idqqimg.com/wpa/v3//css/common-e465e6cb.css)
 
 ![image](https://github.com/HankBass/Cache-Guide/blob/master/images/max-age.png?raw=true)
 
@@ -148,8 +149,28 @@ c、一些资源的最后修改时间改变了，但是内容没改变，使用E
 1. 服务端接收到请求，设置response 的 cache-control并返回response
 2. 浏览器接收到response header,根据cache-control 设置缓存
 
+```
+response.setHeader("Pragma","No-cache");
+response.setHeader("Cache-Control","no-cache");
+response.setDateHeader("Expires", -10);
+```
+
 其他情况
 1. 浏览器可以根据用户操作直接跳过缓存，比如勾选了控制台的Disable cache
+
+#### 浏览器缓存机制
+
+
+1. 先去内存看，如果有，直接加载
+2. 如果内存没有，择取硬盘获取，如果有直接加载
+3. 如果硬盘也没有，那么就进行网络请求
+4. 加载到的资源缓存到硬盘和内存
+
+> 访问-> 200 -> 退出浏览器
+
+> 再进来-> 200(from disk cache) -> 刷新 -> 200(from memory cache)
+
+
 
 #### 工程中遇到的问题
 
